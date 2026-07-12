@@ -1,0 +1,13 @@
+/target
+/debug
+Cargo.lock
+**/*.rs.bk
+*.pdb
+rust-project.json
+.env
+.env.local
+.env.production
+
+# OS
+.DS_Store
+Thumbs.db
