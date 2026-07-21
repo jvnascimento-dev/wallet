@@ -12,3 +12,9 @@ pub struct DtoAsset {
     pub name: String,
     pub unit_value: f64,
 }
+#[derive(Deserialize)]
+pub struct UpdateDtoAsset {
+    pub id: i64,
+    pub name: Option<String>,
+    pub unit_value: Option<f64>,
+}

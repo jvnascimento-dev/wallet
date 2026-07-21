@@ -1,7 +1,10 @@
 use crate::app::App;
 
 mod app;
-mod models;
+pub mod auth;
+pub mod error;
+pub mod models;
+pub mod routes;
 
 #[tokio::main]
 async fn main() -> color_eyre::Result<()> {
