@@ -58,3 +58,10 @@ impl FromRequestParts<AppState> for Repository {
         })
     }
 }
+
+#[cfg(test)]
+impl From<PgPool> for Repository {
+    fn from(db: PgPool) -> Self {
+        Self { db }
+    }
+}
