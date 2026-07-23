@@ -33,6 +33,7 @@ impl App {
         let listener: TcpListener = TcpListener::bind("0.0.0.0:3000").await?;
         let router = Router::new()
             .nest("/api", routes::api::router())
+            .merge(routes::frontend::router())
             .with_state(state);
         info!("Start Service");
         axum::serve(listener, router).await?;

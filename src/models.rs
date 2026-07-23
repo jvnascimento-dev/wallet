@@ -18,3 +18,9 @@ pub struct UpdateDtoAsset {
     pub name: Option<String>,
     pub unit_value: Option<f64>,
 }
+
+pub struct UserRecord {
+    pub id: i64,
+    pub username: String,
+    pub password_hash: String,
+}

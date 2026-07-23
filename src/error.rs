@@ -7,10 +7,16 @@ pub enum AppErr {
     MissingAuthorization,
     #[error("Invalid Credentials!")]
     InvalidCredentials,
+    #[error("User Does Not Exist")]
+    UserDoesNotExist,
     #[error("Asset does not exist!")]
     AssetDoesNotExist,
     #[error(transparent)]
     Database(#[from] sqlx::Error),
+    #[error("This username is already registered")]
+    UsernameTaken,
+    #[error(transparent)]
+    Template(#[from] askama::Error),
 }
 #[derive(Serialize)]
 pub struct ErrorResponse {
@@ -23,10 +29,10 @@ impl IntoResponse for AppErr {
             error: self.to_string(),
         };
         let status = match self {
-            Self::MissingAuthorization => StatusCode::BAD_REQUEST,
+            Self::UsernameTaken | Self::MissingAuthorization => StatusCode::BAD_REQUEST,
             Self::InvalidCredentials => StatusCode::UNAUTHORIZED,
-            Self::AssetDoesNotExist => StatusCode::NOT_FOUND,
-            Self::Database(_) => StatusCode::INTERNAL_SERVER_ERROR,
+            Self::UserDoesNotExist | Self::AssetDoesNotExist => StatusCode::NOT_FOUND,
+            Self::Template(_) | Self::Database(_) => StatusCode::INTERNAL_SERVER_ERROR,
         };
 
         (status, Json(error_response)).into_response()
