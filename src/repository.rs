@@ -73,10 +73,6 @@ impl Repository {
         .fetch_optional(&self.db)
         .await
     }
-
-    pub async fn rm_user(&self) {
-        todo!()
-    }
 }
 
 impl FromRequestParts<AppState> for Repository {

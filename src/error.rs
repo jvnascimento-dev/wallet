@@ -17,6 +17,8 @@ pub enum AppErr {
     UsernameTaken,
     #[error(transparent)]
     Template(#[from] askama::Error),
+    #[error(transparent)]
+    Jwt(#[from] jwt_simple::Error),
 }
 #[derive(Serialize)]
 pub struct ErrorResponse {
@@ -32,7 +34,9 @@ impl IntoResponse for AppErr {
             Self::UsernameTaken | Self::MissingAuthorization => StatusCode::BAD_REQUEST,
             Self::InvalidCredentials => StatusCode::UNAUTHORIZED,
             Self::UserDoesNotExist | Self::AssetDoesNotExist => StatusCode::NOT_FOUND,
-            Self::Template(_) | Self::Database(_) => StatusCode::INTERNAL_SERVER_ERROR,
+            Self::Template(_) | Self::Database(_) | Self::Jwt(_) => {
+                StatusCode::INTERNAL_SERVER_ERROR
+            }
         };
 
         (status, Json(error_response)).into_response()
