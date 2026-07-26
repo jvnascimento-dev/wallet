@@ -13,7 +13,6 @@ use axum::{
 use axum_extra::extract::{CookieJar, cookie::Cookie};
 use serde::Deserialize;
 
-#[axum::debug_handler]
 pub fn router() -> Router<AppState> {
     Router::new()
         .route("/", get(index))
@@ -37,8 +36,8 @@ struct LoginForm {
 
 async fn login(
     repository: Repository,
-    Form(request): Form<LoginForm>,
     jar: CookieJar,
+    Form(request): Form<LoginForm>,
 ) -> Result<impl IntoResponse, AppErr> {
     let unauth_user = UnauthUser::new(request.username, request.password);
     let user = match unauth_user.authenticate(&repository).await {
