@@ -57,3 +57,6 @@ async fn index(maybe_user: Option<User>) -> Result<Response, AppErr> {
         None => Ok(Redirect::to("/login").into_response()),
     }
 }
+async fn logout(jar: CookieJar) -> impl IntoResponse {
+    (jar.remove("token"), Redirect::to("/login"))
+}

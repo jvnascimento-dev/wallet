@@ -4,7 +4,7 @@ use std::convert::Infallible;
 
 use crate::{
     app::AppState,
-    models::{Asset, UserRecord},
+    models::{Asset, OwnedAsset, UserRecord},
 };
 pub struct Repository {
     db: PgPool,
@@ -73,6 +73,55 @@ impl Repository {
         .fetch_optional(&self.db)
         .await
     }
+
+    pub async fn insert_owned_assets(
+        &self,
+        user_id: i64,
+        asset_id: i64,
+        quantity: f64,
+        unit_value: f64,
+    ) -> sqlx::Result<()> {
+        sqlx::query!(
+            "
+            INSERT INTO owned_assets (user_id, asset_id, quantify_owned, bought_for)
+            VALUES( $1, $2, $3, $4);
+        ",
+            user_id,
+            asset_id,
+            quantity,
+            unit_value,
+        )
+        .execute(&self.db)
+        .await?;
+        Ok(())
+    }
+
+    pub async fn list_owned_assets(&self, user_id: i64) -> sqlx::Result<Vec<OwnedAsset>> {
+        sqlx::query_as!(
+            OwnedAsset,
+            r#"
+            SELECT ast.id, ast.name, ast.unit_value, 
+            SUM(( ast.unit_value + own.bought_for) * own.quantify_owned) AS "value_delta!",
+            SUM(own.quantify_owned) AS "quantify_owned!",
+            JSON_AGG(
+                JSON_BUILD_OBJECT(
+                    'bought_at', own.timestamp,
+                    'bought_for', own.bought_for,
+                    'quantify_bought', own.quantify_owned,
+                    'value_delta', (ast.unit_value - own.bought_for) * own.quantify_owned
+                )
+            ) AS "purchase_history!: _"
+            FROM assets AS ast
+            JOIN owned_assets AS own
+                ON own.asset_id = ast.id 
+            WHERE own.user_id = $1
+            GROUP BY ast.id;
+        "#,
+            user_id
+        )
+        .fetch_all(&self.db)
+        .await
+    }
 }
 
 impl FromRequestParts<AppState> for Repository {
@@ -87,6 +136,8 @@ impl FromRequestParts<AppState> for Repository {
         })
     }
 }
+
+//Testes
 
 #[cfg(test)]
 impl From<PgPool> for Repository {
