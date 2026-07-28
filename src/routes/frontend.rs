@@ -8,6 +8,7 @@ use crate::{
 use askama::Template;
 use axum::{
     Form, Router,
+    http::request,
     response::{Html, IntoResponse, Redirect, Response},
     routing::get,
 };
@@ -20,6 +21,7 @@ pub fn router() -> Router<AppState> {
         .route("/", get(index))
         .route("/login", get(login_page).post(login))
         .route("/logout", get(logout))
+        .route("/assets", get(assets))
 }
 
 #[derive(Template)]
@@ -54,10 +56,10 @@ async fn login(
     Ok((jar.add(cookie), Redirect::to("/")))
 }
 
-async fn index(maybe_user: Option<User>) -> Result<Response, AppErr> {
+async fn index(maybe_user: Option<User>) -> Result<Redirect, AppErr> {
     match maybe_user {
-        Some(user) => Ok(Html(format!("Hello {}", user.username())).into_response()),
-        None => Ok(Redirect::to("/login").into_response()),
+        Some(_) => Ok(Redirect::to("/assets")),
+        None => Ok(Redirect::to("/login")),
     }
 }
 async fn logout(jar: CookieJar) -> impl IntoResponse {
@@ -85,4 +87,27 @@ async fn assets(repository: Repository, user: User) -> Result<Html<String>, AppE
     }
     .render()?;
     Ok(Html(html))
+}
+
+#[derive(Deserialize)]
+pub struct PurchaseAssetForm {
+    asset_id: i64,
+    unit_value: f64,
+    quantity: f64,
+}
+
+pub async fn purchase_asset(
+    repository: Repository,
+    user: User,
+    Form(request): Form<PurchaseAssetForm>,
+) -> Result<Redirect, AppErr> {
+    repository
+        .insert_owned_assets(
+            user.id(),
+            request.asset_id,
+            request.quantity,
+            request.unit_value,
+        )
+        .await?;
+    Ok(Redirect::to("/assets"))
 }
