@@ -111,3 +111,25 @@ pub async fn purchase_asset(
         .await?;
     Ok(Redirect::to("/assets"))
 }
+
+// Mod para Filter
+
+pub mod filters {
+    use askama;
+    use time::{
+        OffsetDateTime, format_description::StaticFormatDescription, macros::format_description,
+    };
+
+    #[askama::filter_fn]
+    pub fn human_datetime(
+        datetime: &OffsetDateTime,
+        _env: &dyn askama::Values,
+    ) -> askama::Result<String> {
+        const HUMAN_READABLE_FORMAT: StaticFormatDescription =
+            format_description!(version = 2, "[day]-[month]-[year] [hour]:[minute]");
+
+        datetime
+            .format(HUMAN_READABLE_FORMAT)
+            .map_err(askama::Error::custom)
+    }
+}
