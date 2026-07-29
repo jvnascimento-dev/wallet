@@ -57,7 +57,7 @@
           {% for asset in owned_assets %}
           <!-- Asset Row Principal -->
           <tr class="border-b border-white/5 hover:bg-white/5 transition-colors cursor-pointer group"
-            onclick="toggleHistory('history-1')">
+            onclick="toggleHistory('history-{{ loop.index }}')">
             <td class="py-4 px-6 font-bold text-cyan-50 flex items-center gap-3">
               <div class="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_10px_rgba(34,211,238,0.8)]"></div>
               {{ asset.name }}
@@ -75,7 +75,7 @@
           </tr>
 
           <!-- Expandable History Row -->
-          <tr id="history-1" class="hidden history-row bg-black/40 border-b border-white/5">
+          <tr id="history-{{ loop.index }}" class="hidden history-row bg-black/40 border-b border-white/5">
             <td colspan="5" class="p-0">
               <div class="py-4 px-8 border-l-2 border-cyan-500/50 ml-4 my-2">
                 <h4 class="text-xs text-cyan-400/70 mb-3 uppercase tracking-wider">Purchase History</h4>
@@ -87,15 +87,16 @@
                     <td class="py-2 px-2">{{ purchase.quantify_bought }}</td>
                     <td class="py-2 px-2">$ {{ purchase.bought_for }}</td>
                     {% if purchase.value_delta >= 0.0 %}
-                    <td class="py-2 px-2 text-green-400">+{{ purchase.value_delta }}</td>
+                    <td class="py-2 px-2 text-green-400">{{ purchase.value_delta }}</td>
                     {% else %}
-                    <td class="py-2 px-2 text-red-400"><-{{ purchase.value_delta }}</td>
-                        {% endif %}
+                    <td class="py-2 px-2 text-red-400">{{ purchase.value_delta }}</td>
+                    {% endif %}
                   </tr>
                   {% endfor %}
                 </table>
               </div>
             </td>
+
           </tr>
           <!-- FIM DO LOOP ASKAMA -->
           {% endfor %}
