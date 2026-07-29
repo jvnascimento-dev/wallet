@@ -2,14 +2,13 @@ use crate::{
     app::AppState,
     auth::user::{UnauthUser, User},
     error::AppErr,
-    models::{Asset, OwnedAsset, PurchaseHistory},
+    models::{Asset, OwnedAsset},
     repository::Repository,
 };
 use askama::Template;
 use axum::{
     Form, Router,
-    http::request,
-    response::{Html, IntoResponse, Redirect, Response},
+    response::{Html, IntoResponse, Redirect},
     routing::get,
 };
 use axum_extra::extract::{CookieJar, cookie::Cookie};
