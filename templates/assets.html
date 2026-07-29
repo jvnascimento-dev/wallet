@@ -53,17 +53,17 @@
           </tr>
         </thead>
         <tbody id="assetsTableBody">
-          <!-- INÍCIO DO LOOP ASKAMA: {% for asset in assets %} -->
-          {% for asset in owned_assets%}
+          <!-- INÍCIO DO LOOP ASKAMA:-->
+          {% for asset in owned_assets %}
           <!-- Asset Row Principal -->
           <tr class="border-b border-white/5 hover:bg-white/5 transition-colors cursor-pointer group"
             onclick="toggleHistory('history-1')">
             <td class="py-4 px-6 font-bold text-cyan-50 flex items-center gap-3">
               <div class="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_10px_rgba(34,211,238,0.8)]"></div>
-              {{asset.name}}
+              {{ asset.name }}
             </td>
-            <td class="py-4 px-6">{{asset.quantity_owned}}</td>
-            <td class="py-4 px-6">$ {{asset.unit_value}}</td>
+            <td class="py-4 px-6">{{ asset.quantify_owned }}</td>
+            <td class="py-4 px-6">$ {{ asset.unit_value }}</td>
             {% if asset.value_delta >= 0.0 %}
             <td class="py-4 px-6 text-green-400">+{{ asset.value_delta }}%</td>
             {% else %}
@@ -80,11 +80,11 @@
               <div class="py-4 px-8 border-l-2 border-cyan-500/50 ml-4 my-2">
                 <h4 class="text-xs text-cyan-400/70 mb-3 uppercase tracking-wider">Purchase History</h4>
                 <table class="w-full text-sm text-white/70">
-                  <!-- {% for history in asset.histories %} -->
+                  <!-- Askama loop -->
                   {% for purchase in asset.purchase_history.0 %}
                   <tr class="border-b border-white/5 last:border-0 hover:bg-white/5 transition-colors">
                     <td class="py-2 px-2">{{ purchase.bought_at | human_datetime }}</td>
-                    <td class="py-2 px-2">{{ purchase.quantity_bought }}</td>
+                    <td class="py-2 px-2">{{ purchase.quantify_bought }}</td>
                     <td class="py-2 px-2">$ {{ purchase.bought_for }}</td>
                     {% if purchase.value_delta >= 0.0 %}
                     <td class="py-2 px-2 text-green-400">+{{ purchase.value_delta }}</td>
@@ -93,13 +93,12 @@
                         {% endif %}
                   </tr>
                   {% endfor %}
-                  <!-- {% endfor %} -->
                 </table>
               </div>
             </td>
           </tr>
+          <!-- FIM DO LOOP ASKAMA -->
           {% endfor %}
-          <!-- FIM DO LOOP ASKAMA: {% endfor %} -->
         </tbody>
       </table>
     </div>

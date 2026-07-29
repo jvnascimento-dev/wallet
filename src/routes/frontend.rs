@@ -2,7 +2,7 @@ use crate::{
     app::AppState,
     auth::user::{UnauthUser, User},
     error::AppErr,
-    models::{Asset, OwnedAsset},
+    models::{Asset, OwnedAsset, PurchaseHistory},
     repository::Repository,
 };
 use askama::Template;
@@ -21,7 +21,7 @@ pub fn router() -> Router<AppState> {
         .route("/", get(index))
         .route("/login", get(login_page).post(login))
         .route("/logout", get(logout))
-        .route("/assets", get(assets))
+        .route("/assets", get(assets).post(purchase_asset))
 }
 
 #[derive(Template)]
@@ -71,7 +71,6 @@ async fn logout(jar: CookieJar) -> impl IntoResponse {
 pub struct AssetsPage {
     owned_assets: Vec<OwnedAsset>,
     available_assets: Vec<Asset>,
-    user: User,
 }
 
 async fn assets(repository: Repository, user: User) -> Result<Html<String>, AppErr> {
@@ -83,7 +82,6 @@ async fn assets(repository: Repository, user: User) -> Result<Html<String>, AppE
     let html = AssetsPage {
         owned_assets,
         available_assets,
-        user,
     }
     .render()?;
     Ok(Html(html))
